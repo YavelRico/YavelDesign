@@ -1,5 +1,4 @@
 <?php
-
 $to = 'yavelwork@gmail.com';
 
 function url()
@@ -11,45 +10,37 @@ function url()
     );
 }
 
-if ($_POST) {
-
+if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $fname = trim(stripslashes($_POST['fname']));
-    $lname = trim(stripslashes($_POST['fname']));
+    $lname = trim(stripslashes($_POST['lname']));
     $email = trim(stripslashes($_POST['email']));
-    $subject = trim(stripslashes($_POST['subject']));
-    $contact_message = trim(stripslashes($_POST['message']));
+    $message = trim(stripslashes($_POST['message']));
 
     $name = $fname . ' ' . $lname;
 
-    if ($subject == '') {
+    if (empty($_POST['subject'])) {
         $subject = "Nuevo mensaje de YavelArt Web";
+    } else {
+        $subject = trim(stripslashes($_POST['subject']));
     }
 
-    // Set Message
-    $message .= "Mensaje de: " . $name . "<br />";
-    $message .= "Email: " . $email . "<br />";
-    $message .= "Mensaje: <br />";
-    $message .= nl2br($contact_message);
-    $message .= "<br /> ----- <br /> Este mail fue enviado desde el sitio de Contacto de YavelDesign " . url();
+    $messageBody = "Mensaje de: " . $name . "<br />";
+    $messageBody .= "Email: " . $email . "<br />";
+    $messageBody .= "Mensaje: <br />";
+    $messageBody .= nl2br($message);
+    $messageBody .= "<br /> ----- <br /> Este correo fue enviado desde el formulario de contacto de YavelDesign " . url();
 
-    // Set From: header
-    $from = $name . " <" . $email . ">";
-
-    // Email Headers
-    $headers = "From: " . $from . "\r\n";
+    $headers = "From: " . $name . " <" . $email . ">\r\n";
     $headers .= "Reply-To: " . $email . "\r\n";
     $headers .= "MIME-Version: 1.0\r\n";
     $headers .= "Content-Type: text/html; charset=ISO-8859-1\r\n";
 
-    ini_set("sendmail_from", $to); // for windows server
-    $mail = mail($to, $subject, $message, $headers);
+    $mail = mail($to, $subject, $messageBody, $headers);
 
     if ($mail) {
         echo "OK";
     } else {
-        echo "Something went wrong. Please try again.";
+        echo "Hubo un error. Por favor, intenta nuevamente.";
     }
-
 }
-
 ?>
